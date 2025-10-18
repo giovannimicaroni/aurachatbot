@@ -30,6 +30,8 @@ def init_chat():
         print(response["answer"])
         
         history.append(hist_unity)
+        while len(history) > 10:
+            history.pop(0)
 
         interacao += 1
 
