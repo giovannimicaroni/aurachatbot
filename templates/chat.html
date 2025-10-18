@@ -79,6 +79,7 @@
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
+            min-height: 0; /* Important for flex children to respect overflow */
         }
 
         .chat-header {
@@ -128,6 +129,7 @@
             flex: 1;
             padding: 30px;
             overflow-y: auto;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -135,6 +137,7 @@
             backdrop-filter: blur(15px);
             border-left: 1px solid rgba(255, 255, 255, 0.3);
             border-right: 1px solid rgba(255, 255, 255, 0.3);
+            min-height: 0; /* Important for flex children to respect overflow */
         }
 
         .chat-messages::-webkit-scrollbar {
@@ -343,7 +346,7 @@
     <!-- Chat Wrapper -->
     <div class="chat-wrapper">
         <div class="chat-header">
-            <h1>AURA</h1>
+            <h1>Chat AURA</h1>
             <div class="chat-actions">
                 <button class="clear-btn" id="clearBtn">Limpar Histórico</button>
             </div>
