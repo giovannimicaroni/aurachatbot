@@ -8,6 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from operator import itemgetter
 from typing import List
+from PyPDF2 import PdfReader
 
 # Load environment variables
 load_dotenv()
@@ -61,9 +62,10 @@ class RAGChatbot:
             | StrOutputParser()
         )
     
-    def add_documents(self, texts: list[str], chunk_size: int = 1000, chunk_overlap: int = 200):
+    def add_documents(self, texts: list[dict], chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
         """
         Add documents to the RAG system and initializes the stateless LCEL chain.
+        Documents are split into chunks and uploaded to the vectorstore in batches.
         """
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
@@ -71,15 +73,29 @@ class RAGChatbot:
             length_function=len
         )
         
-        documents = [Document(page_content=text, metadata={"source": f"doc_{i}"}) for i, text in enumerate(texts)]
-        splits = text_splitter.split_documents(documents)
+        documents = [
+           Document(page_content=text_dicts["text"], 
+                      metadata={
+                  "indice": text_dicts.get("indice"),
+                    "source": text_dicts.get("source"),
+                    "is_pdf": text_dicts.get("is_pdf", False),
+                }) for text_dicts in texts]
         
+        splits = text_splitter.split_documents(documents)
+
+        print(f"Número de chunks {len(splits)}")
+
         if self.vectorstore is None:
             self.vectorstore = InMemoryVectorStore(self.embeddings)
-            self.vectorstore.add_documents(splits)
-        else:
-            self.vectorstore.add_documents(splits)
-        
+
+        # Add in batches
+        total = len(splits)
+        num_batches = (total + batch_size - 1) // batch_size
+        for i in range(0, total, batch_size):
+            batch = splits[i:i + batch_size]
+            self.vectorstore.add_documents(batch)
+            print(f"Added batch {i // batch_size + 1}/{num_batches} ({len(batch)} chunks)")
+
         self.chain = self._setup_stateless_rag_chain()
         
         print(f"✓ Added {len(splits)} document chunks to knowledge base.")
@@ -98,7 +114,7 @@ class RAGChatbot:
             }
         else:
             prompt = ChatPromptTemplate.from_messages([
-                ("system", "Você é um assistente de IA especializado em heulosofia. Responda as perguntas em português."),
+                ("system", "Você é um assistente de IA especializado em heulosofia. "),
                 ("human", "{question}")
             ])
             chain = prompt | self.llm | StrOutputParser()
@@ -110,6 +126,40 @@ class RAGChatbot:
             }
 
 
+def get_texts(dir):
+    data = []
+    ind = 0
+    for dirpath, dirnames, filenames in os.walk(dir):
+        for filename in filenames:
+            source = os.path.join(dirpath, filename)
+
+            if filename.lower().endswith(".txt"):
+                ind += 1
+
+                try:
+                    with open(source, "r", encoding="utf-8", errors="ignore") as f:
+                        text = f.read()
+                    data.append({"indice": ind ,"source": source, "text": text, "is_pdf": False})
+                except Exception as e:
+                    print("Erro na leitura do arquivo")
+
+            elif filename.lower().endswith(".pdf"):
+                ind += 1
+                text = ""
+
+                try:
+                    reader = PdfReader(source)
+                    for page in reader.pages:
+                        text += (page.extract_text() or "")
+                except Exception:
+                    print("Erro de acesso ao PyPDF2")
+
+                data.append({"indice": ind, "source": source, "text": text, "is_pdf": True})
+            else:
+                print(f"Formato não aceito: {source}")
+
+    return data
+
 if __name__ == "__main__":
     bot = RAGChatbot(OPENAI_API_KEY)
     
@@ -119,39 +169,25 @@ if __name__ == "__main__":
     
     # Add documents for RAG
     print("\n=== Adding Documents ===")
-    sample_texts = [
-        """
-        LangChain é um framework para desenvolver aplicações alimentadas por modelos de linguagem.
-        Ele permite criar aplicações que são conscientes do contexto e podem raciocinar sobre suas respostas.
-        """,
-        """
-        RAG (Retrieval-Augmented Generation) combina os benefícios de modelos de IA baseados em recuperação
-        e de modelos generativos. Ele recupera documentos relevantes e os utiliza para gerar respostas
-        mais precisas e contextualizadas.
-        """,
-        """
-        Bancos de dados vetoriais armazenam embeddings de trechos de texto, permitindo buscas semânticas.
-        Isso possibilita encontrar informações relevantes com base no significado, em vez de palavras-chave.
-        """
-    ]
+    sample_texts = get_texts("arquivos_ong")
     bot.add_documents(sample_texts)
     
     # Chat with Stateless RAG
     print("\n=== Chat with Stateless RAG ===")
     
-    q1 = "O que é RAG no contexto de modelos de linguagem?"
+    q1 = "O que o palestrante define como 'Saneamento Mental'?"
     response = bot.chat(q1)
     print(f"Q1: {q1}")
     print(f"Bot: {response['answer']}")
     print("-" * 20)
     
-    q2 = "Como ele funciona em bases de dados vetoriais?"
+    q2 = "Cite os quatro procedimentos ou ferramentas essenciais para praticar o 'Zendrômeda' e promover a auto-equalização."
     response = bot.chat(q2)
     print(f"Q2: {q2}")
     print(f"Bot: {response['answer']}")
     print("-" * 20)
     
-    q3 = "O que a LangChain permite criar?"
+    q3 = "Como a análise dos sonhos, mesmo os pesadelos, pode resultar em uma sensação de bem-estar e clareza ao acordar? Utilize os exemplos dos participantes para explicar o processo."
     response = bot.chat(q3)
     print(f"Q3: {q3}")
     print(f"Bot: {response['answer']}")
