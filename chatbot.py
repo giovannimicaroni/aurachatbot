@@ -160,6 +160,23 @@ def get_texts(dir):
 
     return data
 
+    
+
+def generate_audio(text):
+    from pathlib import Path
+    from openai import OpenAI
+
+    client = OpenAI()
+    speech_file_path = Path(__file__).parent / "speech.mp3"
+
+    with client.audio.speech.with_streaming_response.create(
+        model="gpt-4o-mini-tts",
+        voice="ash",
+        input=text,
+        instructions="Speak in a assertive and positive tone.",
+    ) as response:
+        response.stream_to_file(speech_file_path)
+
 if __name__ == "__main__":
     bot = RAGChatbot(OPENAI_API_KEY)
     
