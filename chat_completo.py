@@ -13,7 +13,7 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 def init_chat():
     bot = RAGChatbot(OPENAI_API_KEY)
-    bot.add_documents("Meditação Avançada/")
+    bot.add_documents("M_a/")
     flag_chat = True
 
     history = []
