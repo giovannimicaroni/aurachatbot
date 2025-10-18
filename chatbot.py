@@ -48,19 +48,21 @@ class RAGChatbot:
         
         answer_prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", "Você é um assistente de IA especializado em heulosofia. Responda as perguntas em português. Use SOMENTE o contexto fornecido para responder à pergunta. Se a resposta não estiver no contexto, diga que não sabe, mantendo um tom conversacional.\n\nContexto:\n{context}"),
+                ("system", "Você é um assistente de IA amigável especializado em Eulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta. Se a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe, mantendo um tom conversacional. \n\n Contexto da conversa:{history} \n\nContexto:\n{context}"),
                 ("human", "Question: {question}"),
             ])
 
         return (
             {
                 "context": itemgetter("question") | self.vectorstore.as_retriever(search_kwargs={"k": 3}) | self._format_docs,
-                "question": itemgetter("question"), # Original question passed to the next step
+                "question": itemgetter("question"),
+                "history": itemgetter("history")
             }
             | answer_prompt 
             | self.llm 
             | StrOutputParser()
         )
+    
     
     def add_documents(self, texts: list[dict], chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
         """
@@ -76,7 +78,7 @@ class RAGChatbot:
         documents = [
            Document(page_content=text_dicts["text"], 
                       metadata={
-                  "indice": text_dicts.get("indice"),
+                    "indice": text_dicts.get("indice"),
                     "source": text_dicts.get("source"),
                     "is_pdf": text_dicts.get("is_pdf", False),
                 }) for text_dicts in texts]
@@ -100,25 +102,30 @@ class RAGChatbot:
         
         print(f"✓ Added {len(splits)} document chunks to knowledge base.")
 
-    def chat(self, question: str) -> dict:
+    def chat(self, question: str, history: str) -> dict:
         """
         Chat with the bot. Each message is independent. input: {"question": question}
         """
         if self.chain is not None:
+
+            print(f"\n\n {history}")
             
-            response = self.chain.invoke({"question": question})
-            
+            response = self.chain.invoke({"question": question, "history": history})
+
             return {
                 "answer": response,
                 "sources": []
             }
         else:
             prompt = ChatPromptTemplate.from_messages([
-                ("system", "Você é um assistente de IA especializado em heulosofia. "),
+                ("system", "Você é um assistente de IA especializado em heulosofia. Esse é o histórico da conversa {history}"),
                 ("human", "{question}")
             ])
+
+            print(prompt)
+
             chain = prompt | self.llm | StrOutputParser()
-            result = chain.invoke({"question": question})
+            result = chain.invoke({"question": question, "history": history})
 
             return {
                 "answer": result,
@@ -181,7 +188,7 @@ if __name__ == "__main__":
     bot = RAGChatbot(OPENAI_API_KEY)
     
     # Direct chat
-    response = bot.chat("Olá! Como posso te ajudar?")
+    response = bot.chat("Olá! Como posso te ajudar?", "")
     print(f"Bot: {response['answer']}\n")
     
     # Add documents for RAG
@@ -193,19 +200,19 @@ if __name__ == "__main__":
     print("\n=== Chat with Stateless RAG ===")
     
     q1 = "O que o palestrante define como 'Saneamento Mental'?"
-    response = bot.chat(q1)
+    response = bot.chat(q1, "")
     print(f"Q1: {q1}")
     print(f"Bot: {response['answer']}")
     print("-" * 20)
     
     q2 = "Cite os quatro procedimentos ou ferramentas essenciais para praticar o 'Zendrômeda' e promover a auto-equalização."
-    response = bot.chat(q2)
+    response = bot.chat(q2, "")
     print(f"Q2: {q2}")
     print(f"Bot: {response['answer']}")
     print("-" * 20)
     
     q3 = "Como a análise dos sonhos, mesmo os pesadelos, pode resultar em uma sensação de bem-estar e clareza ao acordar? Utilize os exemplos dos participantes para explicar o processo."
-    response = bot.chat(q3)
+    response = bot.chat(q3, "")
     print(f"Q3: {q3}")
     print(f"Bot: {response['answer']}")
     print("-" * 20)
