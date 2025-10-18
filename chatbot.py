@@ -19,7 +19,7 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 
 class RAGChatbot:
-    def __init__(self, openai_api_key: str, model: str = "gpt-3.5-turbo"):
+    def __init__(self, openai_api_key: str, model: str = "gpt-5-nano"):
         """
         Initialize the chatbot with OpenAI API key and other attributes.
         """

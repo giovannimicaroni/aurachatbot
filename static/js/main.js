@@ -60,28 +60,9 @@ async function performSearch(query) {
         return;
     }
 
-    try {
-        const response = await fetch('/api/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: query })
-        });
-
-        if (!response.ok) {
-            throw new Error('Erro ao processar a busca');
-        }
-
-        const data = await response.json();
-        
-        // Open chat and display result
-        openChatWithMessage(query, data.response);
-        
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Ocorreu um erro ao processar sua busca. Tente novamente.');
-    }
+    // Store the query in sessionStorage and redirect to chat page
+    sessionStorage.setItem('initialQuery', query);
+    window.location.href = '/chat';
 }
 
 searchButton.addEventListener('click', () => {

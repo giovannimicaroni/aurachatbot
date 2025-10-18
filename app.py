@@ -23,6 +23,11 @@ def index():
     """Render the main page"""
     return render_template('index.html')
 
+@app.route('/chat')
+def chat_page():
+    """Render the dedicated chat page"""
+    return render_template('chat.html')
+
 @app.route('/api/chat', methods=['POST'])
 def chat():
     """Handle chat messages"""
@@ -155,6 +160,8 @@ def clear_history():
     except Exception as e:
         print(f"Error in clear-history endpoint: {e}")
         return jsonify({'error': 'Internal server error'}), 500
+
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
