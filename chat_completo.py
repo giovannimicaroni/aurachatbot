@@ -1,4 +1,4 @@
-from chatbot import RAGChatbot, get_texts
+from chatbot import RAGChatbot
 
 import os
 
@@ -13,13 +13,12 @@ os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 def init_chat():
     bot = RAGChatbot(OPENAI_API_KEY)
-    sample_texts = get_texts("arquivos_ong")
-    bot.add_documents(sample_texts)
+    bot.add_documents("Meditação Avançada/")
     flag_chat = True
 
     history = []
     interacao = 0
-    input_inicial = input("Olá! Estou aqui para te auxiliar com reflexões, insights e orientações relacionadas à heulosofia, que é a filosofia da felicidade e do bem-estar. Se tiver alguma dúvida, questionamento ou busca por inspiração, estou à disposição para ajudar. Como posso contribuir para o seu bem-estar hoje?")
+    input_inicial = input("Olá! Estou aqui para te auxiliar com reflexões, insights e orientações relacionadas à heulosofia, que é a filosofia da felicidade e do bem-estar. Se tiver alguma dúvida, questionamento ou busca por inspiração, estou à disposição para ajudar. Como posso contribuir para o seu bem-estar hoje?\n")
 
     while flag_chat:
 

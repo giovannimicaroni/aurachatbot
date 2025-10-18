@@ -35,20 +35,22 @@ class RAGChatbot:
         
         self.vectorstore = None
         self.chain = None 
+        
+        self.add_documents(texts_path="arquivos_ong/")
     
     def _format_docs(self, docs: List[Document]) -> str:
         """Formats retrieved documents into a single string for the prompt. Adds simple metadata."""
   
         return "\n\n".join(f"Source: {doc.metadata.get('source', 'N/A')}\nContent: {doc.page_content}" for doc in docs)
 
-    def _setup_stateless_rag_chain(self):
+    def _setup_rag_chain(self):
         """Builds the core RAG chain using LCEL without history components.
         The input is the question, which is passed directly to the retriever.
         """
         
         answer_prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", "Você é um assistente de IA amigável especializado em Eulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta. Se a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe, mantendo um tom conversacional. \n\n Contexto da conversa:{history} \n\nContexto:\n{context}"),
+                ("system", "Você é um assistente de IA amigável especializado em Eulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta. Se a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe, mantendo um tom conversacional. \n\n Histórico da conversa:{history} \n\nContexto:\n{context}"),
                 ("human", "Question: {question}"),
             ])
 
@@ -64,43 +66,79 @@ class RAGChatbot:
         )
     
     
-    def add_documents(self, texts: list[dict], chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
-        """
-        Add documents to the RAG system and initializes the stateless LCEL chain.
-        Documents are split into chunks and uploaded to the vectorstore in batches.
-        """
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size,
-            chunk_overlap=chunk_overlap,
-            length_function=len
-        )
-        
-        documents = [
-           Document(page_content=text_dicts["text"], 
-                      metadata={
+    def add_documents(self, texts_path, chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
+            """
+            Add documents to the RAG system and initializes the stateless LCEL chain.
+            Documents are split into chunks and uploaded to the vectorstore in batches.
+            """
+            def _get_texts(texts_path=texts_path):
+                data = []
+                ind = 0
+                for dirpath, dirnames, filenames in os.walk(texts_path):
+                    for filename in filenames:
+                        source = os.path.join(dirpath, filename)
+
+                        if filename.lower().endswith(".txt"):
+                            ind += 1
+
+                            try:
+                                with open(source, "r", encoding="utf-8", errors="ignore") as f:
+                                    text = f.read()
+                                data.append({"indice": ind ,"source": source, "text": text, "is_pdf": False})
+                            except Exception as e:
+                                print("Erro na leitura do arquivo")
+
+                        elif filename.lower().endswith(".pdf"):
+                            ind += 1
+                            text = ""
+
+                            try:
+                                reader = PdfReader(source)
+                                for page in reader.pages:
+                                    text += (page.extract_text() or "")
+                            except Exception:
+                                print("Erro de acesso ao PyPDF2")
+
+                            data.append({"indice": ind, "source": source, "text": text, "is_pdf": True})
+                        else:
+                            print(f"Formato não aceito: {source}")
+
+                return data
+            
+            texts = _get_texts(texts_path)
+
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=chunk_size,
+                chunk_overlap=chunk_overlap,
+                length_function=len
+            )
+            
+            documents = [
+            Document(page_content=text_dicts["text"], 
+                        metadata={
                     "indice": text_dicts.get("indice"),
-                    "source": text_dicts.get("source"),
-                    "is_pdf": text_dicts.get("is_pdf", False),
-                }) for text_dicts in texts]
-        
-        splits = text_splitter.split_documents(documents)
+                        "source": text_dicts.get("source"),
+                        "is_pdf": text_dicts.get("is_pdf", False),
+                    }) for text_dicts in texts]
+            
+            splits = text_splitter.split_documents(documents)
 
-        print(f"Número de chunks {len(splits)}")
+            print(f"Número de chunks {len(splits)}")
 
-        if self.vectorstore is None:
-            self.vectorstore = InMemoryVectorStore(self.embeddings)
+            if self.vectorstore is None:
+                self.vectorstore = InMemoryVectorStore(self.embeddings)
 
-        # Add in batches
-        total = len(splits)
-        num_batches = (total + batch_size - 1) // batch_size
-        for i in range(0, total, batch_size):
-            batch = splits[i:i + batch_size]
-            self.vectorstore.add_documents(batch)
-            print(f"Added batch {i // batch_size + 1}/{num_batches} ({len(batch)} chunks)")
+            # Add in batches
+            total = len(splits)
+            num_batches = (total + batch_size - 1) // batch_size
+            for i in range(0, total, batch_size):
+                batch = splits[i:i + batch_size]
+                self.vectorstore.add_documents(batch)
+                print(f"Added batch {i // batch_size + 1}/{num_batches} ({len(batch)} chunks)")
 
-        self.chain = self._setup_stateless_rag_chain()
-        
-        print(f"✓ Added {len(splits)} document chunks to knowledge base.")
+            self.chain = self._setup_rag_chain()
+            
+            print(f"✓ Added {len(splits)} document chunks to knowledge base.")
 
     def chat(self, question: str, history: str) -> dict:
         """
@@ -133,42 +171,6 @@ class RAGChatbot:
             }
 
 
-def get_texts(dir):
-    data = []
-    ind = 0
-    for dirpath, dirnames, filenames in os.walk(dir):
-        for filename in filenames:
-            source = os.path.join(dirpath, filename)
-
-            if filename.lower().endswith(".txt"):
-                ind += 1
-
-                try:
-                    with open(source, "r", encoding="utf-8", errors="ignore") as f:
-                        text = f.read()
-                    data.append({"indice": ind ,"source": source, "text": text, "is_pdf": False})
-                except Exception as e:
-                    print("Erro na leitura do arquivo")
-
-            elif filename.lower().endswith(".pdf"):
-                ind += 1
-                text = ""
-
-                try:
-                    reader = PdfReader(source)
-                    for page in reader.pages:
-                        text += (page.extract_text() or "")
-                except Exception:
-                    print("Erro de acesso ao PyPDF2")
-
-                data.append({"indice": ind, "source": source, "text": text, "is_pdf": True})
-            else:
-                print(f"Formato não aceito: {source}")
-
-    return data
-
-    
-
 def generate_audio(text):
     from pathlib import Path
     from openai import OpenAI
@@ -193,8 +195,7 @@ if __name__ == "__main__":
     
     # Add documents for RAG
     print("\n=== Adding Documents ===")
-    sample_texts = get_texts("arquivos_ong")
-    bot.add_documents(sample_texts)
+
     
     # Chat with Stateless RAG
     print("\n=== Chat with Stateless RAG ===")
