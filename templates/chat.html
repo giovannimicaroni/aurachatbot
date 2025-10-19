@@ -11,7 +11,7 @@
     <!-- Header -->
     <header>
         <a href="/" class="logo">
-            <span class="title">AURA</span>
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Aura">
         </a>
         <a href="/" class="back-btn">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="white">
@@ -24,7 +24,7 @@
     <!-- Chat Wrapper -->
     <div class="chat-wrapper">
         <div class="chat-header">
-            <h1>Inspire sua AURA</h1>
+            <h1>Inspire sua <span class="title">AURA</span></h1>
             <div class="chat-actions">
                 <button class="clear-btn" id="clearBtn">Limpar Histórico</button>
             </div>

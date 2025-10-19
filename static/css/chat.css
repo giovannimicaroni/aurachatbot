@@ -40,6 +40,11 @@ header {
     text-decoration: none;
 }
 
+.logo img {
+    height: 120px;
+    width: auto;
+}
+
 .back-btn {
     padding: 12px 25px;
     background: rgba(50, 50, 60, 0.5);
@@ -85,12 +90,13 @@ header {
     border-radius: 20px 20px 0 0;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-bottom: none;
+    font-family: 'Verdana';
 }
 
 .chat-header h1 {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
     font-weight: 600;
-    font-family: 'Marko One', serif;
+    font-family: 'Verdana';
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 

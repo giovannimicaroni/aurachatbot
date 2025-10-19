@@ -21,6 +21,7 @@ body {
     font-family: 'Marko One', serif;
 }
 
+/* Header e Navegação */
 header {
     position: fixed;
     top: 0;
@@ -33,7 +34,7 @@ header {
     background: rgba(30, 30, 40, 0.6);
     backdrop-filter: blur(10px);
     z-index: 100;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .logo {
@@ -60,7 +61,7 @@ nav {
 .nav-btn {
     padding: 12px 25px;
     background: rgba(50, 50, 60, 0.5);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     border-radius: 25px;
     color: white;
     font-size: 1rem;
@@ -79,9 +80,10 @@ nav {
 
 .nav-btn.active {
     background: rgba(255, 255, 255, 0.9);
-    color: #ff0000;
+    color: #001f3f;
 }
 
+/* Menu Mobile */
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -98,6 +100,7 @@ nav {
     transition: all 0.3s ease;
 }
 
+/* Conteúdo das Páginas */
 .page-content {
     min-height: 100vh;
     display: none;
@@ -134,12 +137,22 @@ h1 {
     opacity: 0.9;
 }
 
+.page-content-icon {
+    font-size: 40px;
+    color: white;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Campo de pesquisa */
 .search-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(25, 25, 35, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(40, 40, 50, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     border-radius: 40px;
     padding: 8px 12px;
     width: 80%;
@@ -149,8 +162,8 @@ h1 {
 }
 
 .search-container:focus-within {
-    border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(30, 30, 40, 0.6);
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(40, 40, 50, 0.7);
 }
 
 .search-input {
@@ -164,7 +177,7 @@ h1 {
 }
 
 .search-input::placeholder {
-    color: #bbb;
+    color: rgba(255, 255, 255, 0.6);
     opacity: 0.7;
 }
 
@@ -190,6 +203,7 @@ h1 {
     opacity: 1;
 }
 
+/* Página Sobre */
 .about-content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -198,26 +212,17 @@ h1 {
 }
 
 .feature-card {
-    background: rgba(40, 40, 50, 0.6);
-    backdrop-filter: blur(10px);
+    background: rgba(40, 40, 50, 0.65);
+    backdrop-filter: blur(15px);
     padding: 40px;
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease;
 }
 
 .feature-card:hover {
     transform: translateY(-5px);
-    background: rgba(50, 50, 60, 0.65);
-}
-
-.feature-icon {
-    font-size: 40px;
-    color: white;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    background: rgba(50, 50, 60, 0.7);
 }
 
 .feature-card h3 {
@@ -231,6 +236,16 @@ h1 {
     line-height: 1.6;
 }
 
+.feature-icon {
+    font-size: 40px;
+    color: white;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Página Explorar */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -239,17 +254,17 @@ h1 {
 }
 
 .service-card {
-    background: rgba(40, 40, 50, 0.6);
-    backdrop-filter: blur(10px);
+    background: rgba(40, 40, 50, 0.65);
+    backdrop-filter: blur(15px);
     padding: 35px;
     border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
     transition: all 0.3s ease;
 }
 
 .service-card:hover {
-    background: rgba(50, 50, 60, 0.7);
+    background: rgba(50, 50, 60, 0.75);
     transform: scale(1.05);
 }
 
@@ -273,12 +288,13 @@ h1 {
     line-height: 1.6;
 }
 
+/* Página Dicas - Formulário de Contato */
 .contact-form {
     background: rgba(40, 40, 50, 0.65);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
     padding: 50px;
     border-radius: 30px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     max-width: 600px;
     margin: 50px auto;
 }
@@ -300,9 +316,9 @@ h1 {
 .form-group textarea {
     width: 100%;
     padding: 15px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     border-radius: 15px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.85);
     font-size: 1rem;
     font-family: inherit;
     transition: all 0.3s ease;
@@ -311,8 +327,8 @@ h1 {
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: white;
-    background: white;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.95);
 }
 
 .form-group textarea {
@@ -323,10 +339,10 @@ h1 {
 .submit-btn {
     width: 100%;
     padding: 15px;
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
     border: none;
     border-radius: 15px;
-    color: #ff0000;
+    color: #001f3f;
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
@@ -336,8 +352,10 @@ h1 {
 .submit-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    background: white;
 }
 
+/* Chatbot Styles */
 .chat-button {
     position: fixed;
     bottom: 30px;
@@ -345,21 +363,21 @@ h1 {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ff6b35, #ff0000);
-    border: none;
+    background: rgba(50, 50, 60, 0.8);
+    border: 2px solid rgba(255, 255, 255, 0.3);
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
     z-index: 1000;
-    text-decoration: none;
 }
 
 .chat-button:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 25px rgba(0, 0, 0, 0.4);
+    background: rgba(70, 70, 80, 0.9);
 }
 
 .chat-button svg {
@@ -374,9 +392,10 @@ h1 {
     right: 30px;
     width: 380px;
     height: 550px;
-    background: rgba(40, 40, 50, 0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(25, 25, 35, 0.95);
+    backdrop-filter: blur(15px);
     border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     display: none;
     flex-direction: column;
@@ -401,12 +420,14 @@ h1 {
 }
 
 .chat-header {
-    background: linear-gradient(135deg, #001f3f, #ff0000);
+    background: rgba(40, 40, 50, 0.8);
+    backdrop-filter: blur(10px);
     padding: 20px;
     color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .chat-header h3 {
@@ -440,19 +461,24 @@ h1 {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    background: rgba(25, 25, 35, 0.5);
 }
 
 .chat-messages::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
 }
 
 .chat-messages::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background: #ff0000;
-    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.4);
 }
 
 .message {
@@ -462,6 +488,7 @@ h1 {
     font-size: 0.95rem;
     line-height: 1.4;
     animation: fadeIn 0.3s ease;
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -492,8 +519,9 @@ h1 {
 
 .chat-input-container {
     padding: 15px 20px;
-    background: rgba(30, 30, 40, 0.9);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(40, 40, 50, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
     display: flex;
     gap: 10px;
 }
@@ -501,34 +529,39 @@ h1 {
 .chat-input {
     flex: 1;
     padding: 12px 16px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     border-radius: 25px;
     font-size: 0.95rem;
     outline: none;
-    transition: border-color 0.2s ease;
-    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.85);
     color: #1f2937;
 }
 
+.chat-input::placeholder {
+    color: #6b7280;
+}
+
 .chat-input:focus {
-    border-color: #ff0000;
-    background: white;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.95);
 }
 
 .chat-send {
     width: 45px;
     height: 45px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #001f3f, #ff0000);
-    border: none;
+    background: rgba(50, 50, 60, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.25);
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .chat-send:hover {
+    background: rgba(70, 70, 80, 0.6);
     transform: scale(1.05);
 }
 
@@ -548,9 +581,10 @@ h1 {
     gap: 4px;
     padding: 12px 16px;
     background: rgba(0, 31, 63, 0.5);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 18px;
     width: fit-content;
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .typing-dot {
@@ -578,6 +612,139 @@ h1 {
     }
 }
 
+/* === API KEY BUTTON === */
+#apiKeyBtn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s ease;
+    font-size: 1rem;
+}
+
+#apiKeyBtn i {
+    font-size: 1rem;
+}
+
+#apiKeyBtn:hover {
+    color: #ffb84d;
+}
+
+/* === MODAL BACKGROUND === */
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+/* === MODAL CONTENT === */
+.modal-content {
+    width: 90%;
+    max-width: 480px;
+    background: rgba(40, 40, 50, 0.95);
+    backdrop-filter: blur(15px);
+    padding: 20px 24px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: white;
+    position: relative;
+}
+
+.modal-content h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.modal .close {
+    position: absolute;
+    right: 18px;
+    top: 12px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.7);
+    transition: color 0.2s ease;
+}
+
+.modal .close:hover {
+    color: white;
+}
+
+.api-key-info {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    margin: 8px 0 14px;
+}
+
+/* === INPUT FIELD === */
+#apiKeyInput {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.85);
+    outline: none;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+#apiKeyInput:focus {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* === BUTTONS INSIDE MODAL === */
+.api-key-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.cancel-btn {
+    background: rgba(50, 50, 60, 0.5);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.save-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #001f3f;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: 600;
+}
+
+.save-btn:hover {
+    background: white;
+    transform: translateY(-2px);
+}
+
+.cancel-btn:hover {
+    background: rgba(70, 70, 80, 0.6);
+}
+
+
+/* Responsive */
 @media (max-width: 768px) {
     header {
         padding: 15px 20px;
@@ -589,7 +756,7 @@ h1 {
         left: -100%;
         width: 100%;
         height: calc(100vh - 70px);
-        background: rgba(40, 40, 50, 0.95);
+        background: rgba(30, 30, 40, 0.95);
         backdrop-filter: blur(10px);
         flex-direction: column;
         padding: 50px 0;
