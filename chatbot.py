@@ -9,6 +9,7 @@ from langchain_core.output_parsers import StrOutputParser
 from operator import itemgetter
 from typing import List
 from PyPDF2 import PdfReader
+import pdfplumber
 from langchain.schema import Document
 import tempfile
 import pathlib
@@ -102,6 +103,17 @@ class RAGChatbot:
                             except Exception:
                                 print("Erro de acesso ao PyPDF2")
 
+                            if not text:
+                                try:
+                                    with pdfplumber.open(source) as pdf:
+                                        print("Lendo com o pdfplumber")
+                                        for page in pdf.pages:
+                                            page_text = page.extract_text() or ""
+                                            text += page_text + "\n"
+                                except Exception as e:
+                                    print(f"Erro ao ler PDF: {e}")
+                                    text = ""
+
                             data.append({"indice": ind, "source": source, "text": text, "is_pdf": True})
                         else:
                             print(f"Formato não aceito: {source}")
@@ -148,35 +160,37 @@ class RAGChatbot:
         Adiciona um único arquivo à vectorstore.
         - file_storage: objeto FileStorage recebido do Flask (request.files['file'])
         - save_to_dir: caminho opcional de diretório (ex: 'arquivos_ong/') para salvar o arquivo
+        Usa internamente a lógica completa de add_documents().
         """
 
-        # Se save_to_dir for definido, salva o arquivo lá
+        print("\n========== DEBUG add_single_document ==========")
+        print(f"Arquivo recebido: {file_storage.filename}")
+        print(f"save_to_dir: {save_to_dir}")
+
+        # 1️⃣ Decide onde salvar o arquivo
         if save_to_dir:
             save_path = pathlib.Path(save_to_dir)
             save_path.mkdir(parents=True, exist_ok=True)
             file_path = save_path / file_storage.filename
             file_storage.save(file_path)
-            text_path = str(file_path)
         else:
-            # Caso contrário, salva temporariamente apenas para leitura
-            with tempfile.NamedTemporaryFile(delete=False, suffix=pathlib.Path(file_storage.filename).suffix) as tmp:
-                file_storage.save(tmp)
-                text_path = tmp.name
+            tmp_dir = tempfile.mkdtemp()
+            file_path = pathlib.Path(tmp_dir) / file_storage.filename
+            file_storage.save(file_path)
 
-        # Extrai texto
-        docs = self.load_docs(text_path)  # Reutiliza o loader que você já usa em add_documents
-        if not docs:
-            print(f"Nenhum texto extraído de {text_path}")
-            return
+        ext = file_path.suffix.lower()
 
-        # Split dos documentos
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        chunks = text_splitter.split_documents(docs)
 
-        # Adiciona ao vectorstore
-        self.vectorstore.add_documents(chunks)
+        dir_path = str(file_path.parent)
+        self.add_documents(dir_path)
 
-        print(f"Documento '{file_storage.filename}' adicionado à vectorstore{' e salvo em ' + str(save_to_dir) if save_to_dir else ''}.")
+        if not save_to_dir:
+            try:
+                os.remove(file_path)
+                os.rmdir(tmp_dir)
+                print(f"[DEBUG] Arquivo temporário removido: {file_path}")
+            except Exception as e:
+                print(f"[DEBUG] Erro ao remover arquivo temporário: {e}")
 
     def chat(self, question: str, history: str) -> dict:
         """
