@@ -76,6 +76,39 @@ def chat():
         print(f"Error in chat endpoint: {e}")
         return jsonify({'error': 'Internal server error'}), 500
 
+@app.route('/api/upload', methods=['POST'])
+def upload_file():
+    """
+    Recebe multipart/form-data com campos:
+      - file: arquivo enviado
+      - save_to_default: '1' ou '0'
+    Se save_to_default == '1', salva o arquivo em arquivos_ong/ e adiciona à vectorstore.
+    Caso contrário, adiciona apenas temporariamente à vectorstore.
+    """
+    try:
+        if 'file' not in request.files:
+            return jsonify({'success': False, 'message': 'Nenhum arquivo enviado'}), 400
+
+        file_storage = request.files['file']
+        if file_storage.filename == '':
+            return jsonify({'success': False, 'message': 'Arquivo sem nome'}), 400
+
+        save_to_default = request.form.get('save_to_default', '0')
+
+        # Decide se vai salvar em disco
+        if save_to_default == '1' or save_to_default.lower() == 'true':
+            chatbot.add_single_document(file_storage, save_to_dir='arquivos_ong')
+            msg = f"Arquivo '{file_storage.filename}' salvo e adicionado à base principal."
+        else:
+            chatbot.add_single_document(file_storage)
+            msg = f"Arquivo '{file_storage.filename}' adicionado temporariamente à base (não salvo em disco)."
+
+        return jsonify({'success': True, 'message': msg}), 200
+
+    except Exception as e:
+        print(f"Erro ao processar upload: {e}")
+        return jsonify({'success': False, 'message': f'Erro interno: {e}'}), 500
+
 @app.route('/api/search', methods=['POST'])
 def search():
     """Handle search queries"""

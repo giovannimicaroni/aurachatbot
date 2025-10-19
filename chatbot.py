@@ -9,6 +9,9 @@ from langchain_core.output_parsers import StrOutputParser
 from operator import itemgetter
 from typing import List
 from PyPDF2 import PdfReader
+from langchain.schema import Document
+import tempfile
+import pathlib
 
 # Load environment variables
 load_dotenv()
@@ -139,6 +142,41 @@ class RAGChatbot:
             self.chain = self._setup_rag_chain()
             
             print(f"✓ Added {len(splits)} document chunks to knowledge base.")
+
+    def add_single_document(self, file_storage, save_to_dir=None):
+        """
+        Adiciona um único arquivo à vectorstore.
+        - file_storage: objeto FileStorage recebido do Flask (request.files['file'])
+        - save_to_dir: caminho opcional de diretório (ex: 'arquivos_ong/') para salvar o arquivo
+        """
+
+        # Se save_to_dir for definido, salva o arquivo lá
+        if save_to_dir:
+            save_path = pathlib.Path(save_to_dir)
+            save_path.mkdir(parents=True, exist_ok=True)
+            file_path = save_path / file_storage.filename
+            file_storage.save(file_path)
+            text_path = str(file_path)
+        else:
+            # Caso contrário, salva temporariamente apenas para leitura
+            with tempfile.NamedTemporaryFile(delete=False, suffix=pathlib.Path(file_storage.filename).suffix) as tmp:
+                file_storage.save(tmp)
+                text_path = tmp.name
+
+        # Extrai texto
+        docs = self.load_docs(text_path)  # Reutiliza o loader que você já usa em add_documents
+        if not docs:
+            print(f"Nenhum texto extraído de {text_path}")
+            return
+
+        # Split dos documentos
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        chunks = text_splitter.split_documents(docs)
+
+        # Adiciona ao vectorstore
+        self.vectorstore.add_documents(chunks)
+
+        print(f"Documento '{file_storage.filename}' adicionado à vectorstore{' e salvo em ' + str(save_to_dir) if save_to_dir else ''}.")
 
     def chat(self, question: str, history: str) -> dict:
         """

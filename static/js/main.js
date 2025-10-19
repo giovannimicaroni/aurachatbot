@@ -211,3 +211,42 @@ chatInput.addEventListener('keypress', (e) => {
         sendChatMessage(chatInput.value);
     }
 });
+
+// === Upload de Arquivos (popup) ===
+const chatFileInput_popup = document.getElementById('chatFileInput');
+const chatUploadBtn_popup = document.getElementById('chatUploadBtn');
+const saveToDefaultCheckbox_popup = document.getElementById('saveToDefaultCheckbox');
+
+if (chatUploadBtn_popup && chatFileInput_popup) {
+  chatUploadBtn_popup.addEventListener('click', (e) => {
+    e.preventDefault();
+    chatFileInput_popup.click();
+  });
+
+  chatFileInput_popup.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    addMessage(`Enviando arquivo: ${file.name} ...`, true);
+
+    const form = new FormData();
+    form.append('file', file);
+    form.append('save_to_default', saveToDefaultCheckbox_popup.checked ? '1' : '0');
+
+    try {
+      const resp = await fetch('/api/upload', {
+        method: 'POST',
+        body: form
+      });
+
+      if (!resp.ok) throw new Error('Falha no upload');
+      const data = await resp.json();
+      addMessage(data.message || `Arquivo ${file.name} enviado.`, false);
+    } catch (err) {
+      console.error('Erro upload:', err);
+      addMessage(`Erro ao enviar ${file.name}.`, false);
+    } finally {
+      chatFileInput_popup.value = '';
+    }
+  });
+}

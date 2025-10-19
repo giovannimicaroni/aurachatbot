@@ -359,19 +359,37 @@
             </div>
         </div>
         <div class="chat-input-container">
-            <input 
-                type="text" 
-                class="chat-input" 
-                id="chatInput" 
+            <input
+                type="text"
+                class="chat-input"
+                id="chatInput"
                 placeholder="Digite sua mensagem..."
                 maxlength="500"
             >
+
+            <!-- Botão de upload e checkbox -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <!-- Input de arquivo invisível -->
+                <input type="file" id="chatFileInput" style="display: none;" />
+
+                <!-- Botão de upload -->
+                <button id="chatUploadBtn" title="Enviar arquivo" style="width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); cursor: pointer;">
+                📎
+                </button>
+
+                <!-- Checkbox para salvar na base -->
+                <label style="color: white; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+                <input type="checkbox" id="saveToDefaultCheckbox" checked>
+                Salvar em arquivos_ong
+                </label>
+            </div>
+
             <button class="chat-send" id="chatSend">
                 <svg viewBox="0 0 24 24">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                 </svg>
             </button>
-        </div>
+            </div>
     </div>
 
     <script>
@@ -501,6 +519,45 @@
                 chatInput.focus();
             }
         });
+
+                // === Upload de Arquivos ===
+        const chatFileInput = document.getElementById('chatFileInput');
+        const chatUploadBtn = document.getElementById('chatUploadBtn');
+        const saveToDefaultCheckbox = document.getElementById('saveToDefaultCheckbox');
+
+        chatUploadBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        chatFileInput.click();
+        });
+
+        chatFileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        addMessage(`Enviando arquivo: ${file.name} ...`, true);
+
+        const form = new FormData();
+        form.append('file', file);
+        form.append('save_to_default', saveToDefaultCheckbox.checked ? '1' : '0');
+
+        try {
+            const resp = await fetch('/api/upload', {
+            method: 'POST',
+            body: form
+            });
+
+            if (!resp.ok) throw new Error('Falha no upload');
+
+            const data = await resp.json();
+            addMessage(data.message || `Arquivo ${file.name} enviado.`, false);
+        } catch (err) {
+            console.error('Erro upload:', err);
+            addMessage(`Erro ao enviar ${file.name}.`, false);
+        } finally {
+            chatFileInput.value = '';
+        }
+        });
+
     </script>
 </body>
 </html>

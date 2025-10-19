@@ -820,12 +820,36 @@
             </div>
         </div>
         <div class="chat-input-container">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Digite sua mensagem..." maxlength="500">
-            <button class="chat-send" id="chatSend">
-                <svg viewBox="0 0 24 24">
-                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                </svg>
+        <input
+            type="text"
+            class="chat-input"
+            id="chatInput"
+            placeholder="Digite sua mensagem..."
+            maxlength="500"
+        >
+
+        <!-- Botão de upload e checkbox -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <!-- Input de arquivo invisível -->
+            <input type="file" id="chatFileInput" style="display: none;" />
+
+            <!-- Botão de upload -->
+            <button id="chatUploadBtn" title="Enviar arquivo" style="width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); cursor: pointer;">
+            📎
             </button>
+
+            <!-- Checkbox para salvar na base -->
+            <label style="color: white; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+            <input type="checkbox" id="saveToDefaultCheckbox" checked>
+            Salvar em arquivos_ong
+            </label>
+        </div>
+
+        <button class="chat-send" id="chatSend">
+            <svg viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+            </svg>
+        </button>
         </div>
     </div>
 
