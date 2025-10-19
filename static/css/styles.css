@@ -21,7 +21,6 @@ body {
     font-family: 'Marko One', serif;
 }
 
-/* Header e Navegação */
 header {
     position: fixed;
     top: 0;
@@ -31,7 +30,7 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(30, 30, 40, 0.6);
     backdrop-filter: blur(10px);
     z-index: 100;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
@@ -60,7 +59,7 @@ nav {
 
 .nav-btn {
     padding: 12px 25px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(50, 50, 60, 0.5);
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 25px;
     color: white;
@@ -73,17 +72,16 @@ nav {
 }
 
 .nav-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(70, 70, 80, 0.6);
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
 .nav-btn.active {
-    background: white;
+    background: rgba(255, 255, 255, 0.9);
     color: #ff0000;
 }
 
-/* Menu Mobile */
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -100,7 +98,6 @@ nav {
     transition: all 0.3s ease;
 }
 
-/* Conteúdo das Páginas */
 .page-content {
     min-height: 100vh;
     display: none;
@@ -137,12 +134,11 @@ h1 {
     opacity: 0.9;
 }
 
-/* Campo de pesquisa minimalista */
 .search-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(25, 25, 35, 0.5);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 40px;
     padding: 8px 12px;
@@ -154,7 +150,7 @@ h1 {
 
 .search-container:focus-within {
     border-color: rgba(255, 255, 255, 0.4);
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(30, 30, 40, 0.6);
 }
 
 .search-input {
@@ -194,7 +190,6 @@ h1 {
     opacity: 1;
 }
 
-/* Página Sobre */
 .about-content {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -203,7 +198,7 @@ h1 {
 }
 
 .feature-card {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(40, 40, 50, 0.6);
     backdrop-filter: blur(10px);
     padding: 40px;
     border-radius: 20px;
@@ -213,6 +208,16 @@ h1 {
 
 .feature-card:hover {
     transform: translateY(-5px);
+    background: rgba(50, 50, 60, 0.65);
+}
+
+.feature-icon {
+    font-size: 40px;
+    color: white;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .feature-card h3 {
@@ -226,8 +231,6 @@ h1 {
     line-height: 1.6;
 }
 
-
-/* Página Explorar */
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -236,7 +239,7 @@ h1 {
 }
 
 .service-card {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(40, 40, 50, 0.6);
     backdrop-filter: blur(10px);
     padding: 35px;
     border-radius: 20px;
@@ -246,13 +249,13 @@ h1 {
 }
 
 .service-card:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(50, 50, 60, 0.7);
     transform: scale(1.05);
 }
 
 .service-icon {
-    font-size: 40px; /* tamanho do ícone */
-    color: white;  /* cor personalizada */
+    font-size: 40px;
+    color: white;
     margin-bottom: 15px;
     display: flex;
     justify-content: center;
@@ -270,9 +273,8 @@ h1 {
     line-height: 1.6;
 }
 
-/* Página Contato */
 .contact-form {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(40, 40, 50, 0.65);
     backdrop-filter: blur(10px);
     padding: 50px;
     border-radius: 30px;
@@ -336,7 +338,6 @@ h1 {
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* Chatbot Styles */
 .chat-button {
     position: fixed;
     bottom: 30px;
@@ -353,6 +354,7 @@ h1 {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     z-index: 1000;
+    text-decoration: none;
 }
 
 .chat-button:hover {
@@ -372,7 +374,7 @@ h1 {
     right: 30px;
     width: 380px;
     height: 550px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(40, 40, 50, 0.95);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -460,6 +462,7 @@ h1 {
     font-size: 0.95rem;
     line-height: 1.4;
     animation: fadeIn 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @keyframes fadeIn {
@@ -475,20 +478,22 @@ h1 {
 
 .message.bot {
     align-self: flex-start;
-    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-    color: #1f2937;
+    background: linear-gradient(135deg, rgba(0, 31, 63, 0.7), rgba(0, 50, 100, 0.6));
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .message.user {
     align-self: flex-end;
-    background: linear-gradient(135deg, #001f3f, #ff0000);
+    background: linear-gradient(135deg, rgba(255, 0, 0, 0.65), rgba(200, 0, 50, 0.7));
     color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .chat-input-container {
     padding: 15px 20px;
-    background: white;
-    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(30, 30, 40, 0.9);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     gap: 10px;
 }
@@ -496,15 +501,18 @@ h1 {
 .chat-input {
     flex: 1;
     padding: 12px 16px;
-    border: 2px solid #e5e7eb;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 25px;
     font-size: 0.95rem;
     outline: none;
     transition: border-color 0.2s ease;
+    background: rgba(255, 255, 255, 0.9);
+    color: #1f2937;
 }
 
 .chat-input:focus {
     border-color: #ff0000;
+    background: white;
 }
 
 .chat-send {
@@ -539,16 +547,17 @@ h1 {
     display: flex;
     gap: 4px;
     padding: 12px 16px;
-    background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+    background: rgba(0, 31, 63, 0.5);
     border-radius: 18px;
     width: fit-content;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .typing-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: #6b7280;
+    background: rgba(255, 255, 255, 0.8);
     animation: typing 1.4s infinite;
 }
 
@@ -569,7 +578,6 @@ h1 {
     }
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     header {
         padding: 15px 20px;
@@ -581,7 +589,7 @@ h1 {
         left: -100%;
         width: 100%;
         height: calc(100vh - 70px);
-        background: rgba(139, 92, 246, 0.95);
+        background: rgba(40, 40, 50, 0.95);
         backdrop-filter: blur(10px);
         flex-direction: column;
         padding: 50px 0;

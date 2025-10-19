@@ -5,12 +5,10 @@ document.addEventListener('mousemove', function(e) {
     
     const angle = Math.atan2(y - 0.5, x - 0.5) * (180 / Math.PI) + 180;
     
-    // Azul escuro (#001f3f) com variações
     const blue1 = Math.floor(0 + (x * 30));
     const blue2 = Math.floor(31 + (y * 40));
     const blue3 = Math.floor(63 + (x * 30));
     
-    // Vermelho (#ff0000) com variações
     const red1 = Math.floor(255 - (x * 50));
     const red2 = Math.floor(0 + (y * 40));
     const red3 = Math.floor(0 + (x * 20));
@@ -60,7 +58,6 @@ async function performSearch(query) {
         return;
     }
 
-    // Store the query in sessionStorage and redirect to chat page
     sessionStorage.setItem('initialQuery', query);
     window.location.href = '/chat';
 }
@@ -108,15 +105,16 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Chatbot functionality
-const chatButton = document.getElementById('chatButton');
+// Chatbot functionality (popup version on home page)
+const chatButton = document.querySelector('.chat-button');
 const chatContainer = document.getElementById('chatContainer');
 const chatClose = document.getElementById('chatClose');
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
 const chatMessages = document.getElementById('chatMessages');
 
-chatButton.addEventListener('click', () => {
+chatButton.addEventListener('click', (e) => {
+    e.preventDefault();
     chatContainer.classList.toggle('active');
     if (chatContainer.classList.contains('active')) {
         chatInput.focus();
@@ -149,20 +147,6 @@ function removeTypingIndicator() {
     if (typingIndicator) {
         typingIndicator.remove();
     }
-}
-
-function openChatWithMessage(userMessage, botResponse) {
-    chatContainer.classList.add('active');
-    addMessage(userMessage, true);
-    
-    showTypingIndicator();
-    
-    setTimeout(() => {
-        removeTypingIndicator();
-        addMessage(botResponse, false);
-    }, 1000);
-    
-    chatInput.focus();
 }
 
 async function sendChatMessage(message) {
@@ -218,35 +202,35 @@ const chatUploadBtn_popup = document.getElementById('chatUploadBtn');
 const saveToDefaultCheckbox_popup = document.getElementById('saveToDefaultCheckbox');
 
 if (chatUploadBtn_popup && chatFileInput_popup) {
-  chatUploadBtn_popup.addEventListener('click', (e) => {
-    e.preventDefault();
-    chatFileInput_popup.click();
-  });
+    chatUploadBtn_popup.addEventListener('click', (e) => {
+        e.preventDefault();
+        chatFileInput_popup.click();
+    });
 
-  chatFileInput_popup.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    chatFileInput_popup.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    addMessage(`Enviando arquivo: ${file.name} ...`, true);
+        addMessage(`Enviando arquivo: ${file.name} ...`, true);
 
-    const form = new FormData();
-    form.append('file', file);
-    form.append('save_to_default', saveToDefaultCheckbox_popup.checked ? '1' : '0');
+        const form = new FormData();
+        form.append('file', file);
+        form.append('save_to_default', saveToDefaultCheckbox_popup.checked ? '1' : '0');
 
-    try {
-      const resp = await fetch('/api/upload', {
-        method: 'POST',
-        body: form
-      });
+        try {
+            const resp = await fetch('/api/upload', {
+                method: 'POST',
+                body: form
+            });
 
-      if (!resp.ok) throw new Error('Falha no upload');
-      const data = await resp.json();
-      addMessage(data.message || `Arquivo ${file.name} enviado.`, false);
-    } catch (err) {
-      console.error('Erro upload:', err);
-      addMessage(`Erro ao enviar ${file.name}.`, false);
-    } finally {
-      chatFileInput_popup.value = '';
-    }
-  });
+            if (!resp.ok) throw new Error('Falha no upload');
+            const data = await resp.json();
+            addMessage(data.message || `Arquivo ${file.name} enviado.`, false);
+        } catch (err) {
+            console.error('Erro upload:', err);
+            addMessage(`Erro ao enviar ${file.name}.`, false);
+        } finally {
+            chatFileInput_popup.value = '';
+        }
+    });
 }
