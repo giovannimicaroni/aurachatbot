@@ -108,17 +108,6 @@ class RAGChatbot:
                             except Exception:
                                 print("Erro de acesso ao PyPDF2")
 
-                            if not text:
-                                try:
-                                    with pdfplumber.open(source) as pdf:
-                                        print("Lendo com o pdfplumber")
-                                        for page in pdf.pages:
-                                            page_text = page.extract_text() or ""
-                                            text += page_text + "\n"
-                                except Exception as e:
-                                    print(f"Erro ao ler PDF: {e}")
-                                    text = ""
-
                             data.append({"indice": ind, "source": source, "text": text, "is_pdf": True})
                         else:
                             print(f"Formato não aceito: {source}")
@@ -143,8 +132,6 @@ class RAGChatbot:
             
             splits = text_splitter.split_documents(documents)
 
-            print(f"Número de chunks {len(splits)}")
-
             if self.vectorstore is None:
                 self.vectorstore = InMemoryVectorStore(self.embeddings)
 
@@ -154,7 +141,6 @@ class RAGChatbot:
             for i in range(0, total, batch_size):
                 batch = splits[i:i + batch_size]
                 self.vectorstore.add_documents(batch)
-                print(f"Added batch {i // batch_size + 1}/{num_batches} ({len(batch)} chunks)")
 
             self.chain = self._setup_rag_chain()
             
@@ -201,8 +187,6 @@ class RAGChatbot:
         Chat with the bot. Each message is independent. input: {"question": question}
         """
         if self.chain is not None:
-
-            print(f"\n\n {history}")
             
             response = self.chain.invoke({"question": question, "history": history})
 
@@ -215,8 +199,6 @@ class RAGChatbot:
                 ("system", "Você é um assistente de IA especializado em heulosofia. Esse é o histórico da conversa {history}"),
                 ("human", "{question}")
             ])
-
-            print(prompt)
 
             chain = prompt | self.llm | StrOutputParser()
             result = chain.invoke({"question": question, "history": history})
