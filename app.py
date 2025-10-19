@@ -3,18 +3,55 @@ from chatbot import RAGChatbot
 import os
 from dotenv import load_dotenv
 import secrets
+from getpass import getpass
+import sys
+import tty
+import termios
+
+def custom_getpass(prompt="Password: "):
+    """Custom getpass that shows asterisks while typing"""
+    print(prompt, end='', flush=True)
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    
+    try:
+        tty.setraw(sys.stdin.fileno())
+        password = ""
+        while True:
+            ch = sys.stdin.read(1)
+            if ch == '\r' or ch == '\n':  # Enter pressed
+                sys.stdout.write('\n')
+                break
+            elif ch == '\x7f' or ch == '\x08':  # Backspace
+                if password:
+                    password = password[:-1]
+                    sys.stdout.write('\b \b')  # Erase character
+            elif ord(ch) < 32:  # Skip control characters
+                continue
+            else:
+                password += ch
+                sys.stdout.write('*')
+            sys.stdout.flush()
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return password
+
 
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    print("Please enter your OpenAI API Key (input will be hidden):")
+    openai_api_key = custom_getpass("OpenAI API Key: ").strip()
+    print("\n")
 
 app = Flask(__name__)
 #Recomendação de segurança
 app.secret_key = secrets.token_hex(16)  
 
 # Inicializar chatbot globalmente
-chatbot = RAGChatbot(OPENAI_API_KEY)
-
+if openai_api_key:
+    os.environ["OPENAI_API_KEY"] = openai_api_key
+    chatbot = RAGChatbot(openai_api_key=openai_api_key)
 #Histórico de conversas em uma mesma sessão
 conversations = {}
 
@@ -192,7 +229,7 @@ def clear_history():
     except Exception as e:
         print(f"Error in clear-history endpoint: {e}")
         return jsonify({'error': 'Internal server error'}), 500
-
+  
 
 
 if __name__ == '__main__':

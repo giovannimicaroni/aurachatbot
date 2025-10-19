@@ -16,20 +16,19 @@ import pathlib
 
 # Load environment variables
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY not set. Add it to your .env or export it in the shell.")
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+
 
 
 #Classe principal
 class RAGChatbot:
-    def __init__(self, openai_api_key: str, model: str = "gpt-5-nano"):
+    def __init__(self, openai_api_key: str= None, model: str = "gpt-5-nano"):
         """
         Initialize the chatbot with OpenAI API key and other attributes.
         """
         self.openai_api_key = openai_api_key
-        
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+
         self.llm = ChatOpenAI(
             model=model,
             temperature=0.7,
@@ -43,6 +42,11 @@ class RAGChatbot:
         
         self.add_documents(texts_path="arquivos_ong/")
     
+    def set_api_key(self, api_key: str):
+        """Sets the OpenAI API key."""
+        self.openai_api_key = api_key
+        os.environ["OPENAI_API_KEY"] = api_key
+
     def _format_docs(self, docs: List[Document]) -> str:
         """Formats retrieved documents into a single string for the prompt. Adds simple metadata."""
   
@@ -55,7 +59,7 @@ class RAGChatbot:
         
         answer_prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", "Você é um assistente de IA amigável especializado em Eulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta. Se a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe, mantendo um tom conversacional. \n\n Histórico da conversa:{history} \n\nContexto:\n{context}"),
+                ("system", "Você é um assistente de IA amigável especializado em Eulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta. Se a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe, mas responda mantendo um tom conversacional. \n\n Histórico da conversa:{history} \n\nContexto:\n{context}"),
                 ("human", "Question: {question}"),
             ])
 
@@ -71,7 +75,7 @@ class RAGChatbot:
         )
     
     #Adição múltipla de documentos
-    def add_documents(self, texts_path, chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
+    def add_documents(self, texts_path, chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 800):
             """
             Add documents to the RAG system and initializes the stateless LCEL chain.
             Documents are split into chunks and uploaded to the vectorstore in batches.
@@ -238,6 +242,5 @@ def generate_audio(text):
     ) as response:
         response.stream_to_file(speech_file_path)
 
-if __name__ == "__main__":
-    bot = RAGChatbot(OPENAI_API_KEY)
+
     

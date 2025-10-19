@@ -25,11 +25,6 @@
             <a href="#" class="nav-btn" data-page="sobre">Sobre a AURA</a>
             <a href="#" class="nav-btn" data-page="explorar">Explorar</a>
             <a href="#" class="nav-btn" data-page="dicas">Dicas</a>
-            <!-- Botão API Key -->
-            <button id="apiKeyBtn" class="nav-btn" title="Configurar OpenAI API Key">
-                <i class="fa-solid fa-key"></i>
-                API Key
-            </button>
         </nav>
     </header>
 
@@ -159,106 +154,6 @@
     </div>
 </div>
 
-<!-- Modal de configuração da API Key -->
-    <div id="apiKeyModal" class="modal" aria-hidden="true" style="display:none;">
-        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="apiKeyTitle">
-            <button class="close" id="apiKeyModalClose" aria-label="Fechar">×</button>
-            <h2 id="apiKeyTitle">Configurar OpenAI API Key</h2>
-            <p class="api-key-info">🔒 Sua chave será armazenada de forma segura na sessão deste navegador e usada apenas para esta sessão.</p>
-            <form id="apiKeyForm">
-                <input type="password" id="apiKeyInput" placeholder="Cole sua OpenAI API Key aqui"/>
-                <div class="api-key-buttons">
-                    <button type="button" id="apiKeyCancel" class="nav-btn cancel-btn">Cancelar</button>
-                    <button type="submit" class="nav-btn save-btn">Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-   <!-- Script JS -->
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script>
-(function() {
-    const btn = document.getElementById('apiKeyBtn');
-    const modal = document.getElementById('apiKeyModal');
-    const closeBtn = document.getElementById('apiKeyModalClose');
-    const cancelBtn = document.getElementById('apiKeyCancel');
-    const form = document.getElementById('apiKeyForm');
-    const input = document.getElementById('apiKeyInput');
-
-    // Função para abrir modal
-    function openModal() {
-        modal.style.display = 'flex';
-        input.focus();
-        modal.setAttribute('aria-hidden', 'false');
-    }
-
-    // Função para fechar modal e voltar para Home
-    function closeModal(goHome = true) {
-        modal.style.display = 'none';
-        input.value = '';
-        modal.setAttribute('aria-hidden', 'true');
-
-        if (goHome) {
-            // Desativa todas as páginas
-            document.querySelectorAll('.page-content').forEach(page => page.classList.remove('active'));
-            // Ativa a Home
-            document.getElementById('home').classList.add('active');
-
-            // Atualiza também a navegação
-            document.querySelectorAll('#nav .nav-btn').forEach(navBtn => navBtn.classList.remove('active'));
-            const homeBtn = document.querySelector('#nav .nav-btn[data-page="home"]');
-            if (homeBtn) homeBtn.classList.add('active');
-        }
-    }
-
-    // Eventos
-    btn.addEventListener('click', openModal);
-    
-    // TODOS os botões de fechar agora voltam para Home
-    closeBtn.addEventListener('click', () => closeModal(true));
-    cancelBtn.addEventListener('click', () => closeModal(true));
-    
-    // Clicar fora do modal também volta para Home
-    modal.addEventListener('click', (e) => { 
-        if (e.target === modal) closeModal(true); 
-    });
-
-    // Tecla ESC também volta para Home
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
-            closeModal(true);
-        }
-    });
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const apiKey = input.value.trim();
-        if (!apiKey) { 
-            alert('Por favor, cole sua OpenAI API Key.'); 
-            return; 
-        }
-
-        try {
-            const res = await fetch('/api/set-api-key', {
-                method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({api_key: apiKey})
-            });
-            if (!res.ok) {
-                const err = await res.json().catch(()=>({error:'Erro'}));
-                alert(err.error || 'Erro ao salvar a API Key.');
-                return;
-            }
-            alert('API Key configurada com sucesso para esta sessão.');
-            closeModal(false); // Não volta para Home ao salvar com sucesso
-        } catch(err) {
-            console.error('Erro ao configurar API Key:', err);
-            alert('Erro ao configurar API Key. Verifique a conexão.');
-        }
-    });
-})();
-</script>
 
     <a href="/chat" class="chat-button">
         <svg viewBox="0 0 24 24">
@@ -305,5 +200,6 @@
     </div>
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
 </body>
 </html>
