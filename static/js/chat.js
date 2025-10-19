@@ -18,7 +18,6 @@ document.addEventListener('mousemove', function(e) {
         rgb(${red1}, ${red2}, ${red3}) 100%)`;
 });
 
-// Chat functionality
 const chatInput = document.getElementById('chatInput');
 const chatSend = document.getElementById('chatSend');
 const chatMessages = document.getElementById('chatMessages');
@@ -114,7 +113,6 @@ clearBtn.addEventListener('click', async () => {
     }
 });
 
-// Check for initial query from home page
 window.addEventListener('DOMContentLoaded', () => {
     const initialQuery = sessionStorage.getItem('initialQuery');
     if (initialQuery) {

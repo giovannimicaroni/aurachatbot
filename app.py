@@ -4,18 +4,18 @@ import os
 from dotenv import load_dotenv
 import secrets
 
-# Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)  # For session management
+#Recomendação de segurança
+app.secret_key = secrets.token_hex(16)  
 
-# Initialize chatbot globally
+# Inicializar chatbot globalmente
 chatbot = RAGChatbot(OPENAI_API_KEY)
 
-# Store conversation histories in memory (use Redis/DB for production)
+#Histórico de conversas em uma mesma sessão
 conversations = {}
 
 @app.route('/')
@@ -111,7 +111,7 @@ def upload_file():
 
 @app.route('/api/search', methods=['POST'])
 def search():
-    """Handle search queries"""
+    """Seach queries na pagina principal"""
     try:
         data = request.get_json()
         query = data.get('query', '').strip()
@@ -159,15 +159,14 @@ def search():
 
 @app.route('/api/contact', methods=['POST'])
 def contact():
-    """Handle contact form submissions"""
+    """Submissão de contatos"""
     try:
         data = request.get_json()
         name = data.get('name', '')
         email = data.get('email', '')
         message = data.get('message', '')
         
-        # Here you would typically send an email or save to database
-        # For now, just log it
+
         print(f"Contact form submission:")
         print(f"Name: {name}")
         print(f"Email: {email}")
@@ -181,7 +180,7 @@ def contact():
 
 @app.route('/api/clear-history', methods=['POST'])
 def clear_history():
-    """Clear conversation history for current session"""
+    """Limpa o histórico da sessão atual"""
     try:
         if 'session_id' in session:
             session_id = session['session_id']

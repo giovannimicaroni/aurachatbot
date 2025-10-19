@@ -22,6 +22,7 @@ if not OPENAI_API_KEY:
 os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 
+#Classe principal
 class RAGChatbot:
     def __init__(self, openai_api_key: str, model: str = "gpt-5-nano"):
         """
@@ -69,7 +70,7 @@ class RAGChatbot:
             | StrOutputParser()
         )
     
-    
+    #Adição múltipla de documentos
     def add_documents(self, texts_path, chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
             """
             Add documents to the RAG system and initializes the stateless LCEL chain.
@@ -154,7 +155,8 @@ class RAGChatbot:
             self.chain = self._setup_rag_chain()
             
             print(f"✓ Added {len(splits)} document chunks to knowledge base.")
-
+    
+    #Add doc único à base de dados
     def add_single_document(self, file_storage, save_to_dir=None):
         """
         Adiciona um único arquivo à vectorstore.
@@ -163,11 +165,8 @@ class RAGChatbot:
         Usa internamente a lógica completa de add_documents().
         """
 
-        print("\n========== DEBUG add_single_document ==========")
         print(f"Arquivo recebido: {file_storage.filename}")
-        print(f"save_to_dir: {save_to_dir}")
 
-        # 1️⃣ Decide onde salvar o arquivo
         if save_to_dir:
             save_path = pathlib.Path(save_to_dir)
             save_path.mkdir(parents=True, exist_ok=True)
@@ -192,6 +191,7 @@ class RAGChatbot:
             except Exception as e:
                 print(f"[DEBUG] Erro ao remover arquivo temporário: {e}")
 
+    #Método de conversa com o modelo
     def chat(self, question: str, history: str) -> dict:
         """
         Chat with the bot. Each message is independent. input: {"question": question}
@@ -222,7 +222,7 @@ class RAGChatbot:
                 "sources": []
             }
 
-
+# Função para gerar o audio da resposta caso dê tempo
 def generate_audio(text):
     from pathlib import Path
     from openai import OpenAI
@@ -241,31 +241,3 @@ def generate_audio(text):
 if __name__ == "__main__":
     bot = RAGChatbot(OPENAI_API_KEY)
     
-    # Direct chat
-    response = bot.chat("Olá! Como posso te ajudar?", "")
-    print(f"Bot: {response['answer']}\n")
-    
-    # Add documents for RAG
-    print("\n=== Adding Documents ===")
-
-    
-    # Chat with Stateless RAG
-    print("\n=== Chat with Stateless RAG ===")
-    
-    q1 = "O que o palestrante define como 'Saneamento Mental'?"
-    response = bot.chat(q1, "")
-    print(f"Q1: {q1}")
-    print(f"Bot: {response['answer']}")
-    print("-" * 20)
-    
-    q2 = "Cite os quatro procedimentos ou ferramentas essenciais para praticar o 'Zendrômeda' e promover a auto-equalização."
-    response = bot.chat(q2, "")
-    print(f"Q2: {q2}")
-    print(f"Bot: {response['answer']}")
-    print("-" * 20)
-    
-    q3 = "Como a análise dos sonhos, mesmo os pesadelos, pode resultar em uma sensação de bem-estar e clareza ao acordar? Utilize os exemplos dos participantes para explicar o processo."
-    response = bot.chat(q3, "")
-    print(f"Q3: {q3}")
-    print(f"Bot: {response['answer']}")
-    print("-" * 20)

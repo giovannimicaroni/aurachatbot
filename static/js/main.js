@@ -1,4 +1,3 @@
-// Background animation
 document.addEventListener('mousemove', function(e) {
     const x = e.clientX / window.innerWidth;
     const y = e.clientY / window.innerHeight;
@@ -18,7 +17,6 @@ document.addEventListener('mousemove', function(e) {
         rgb(${red1}, ${red2}, ${red3}) 100%)`;
 });
 
-// Navigation
 const navButtons = document.querySelectorAll('.nav-btn');
 const pages = document.querySelectorAll('.page-content');
 const menuToggle = document.getElementById('menuToggle');
@@ -48,7 +46,6 @@ menuToggle.addEventListener('click', () => {
     nav.classList.toggle('active');
 });
 
-// Search functionality
 const searchInput = document.getElementById('searchInput');
 const searchButton = document.getElementById('searchButton');
 
@@ -72,7 +69,6 @@ searchInput.addEventListener('keypress', (e) => {
     }
 });
 
-// Contact form
 document.getElementById('contactForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -105,7 +101,6 @@ document.getElementById('contactForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Chatbot functionality (popup version on home page)
 const chatButton = document.querySelector('.chat-button');
 const chatContainer = document.getElementById('chatContainer');
 const chatClose = document.getElementById('chatClose');
