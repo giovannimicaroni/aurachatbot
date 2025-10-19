@@ -14,6 +14,7 @@ Pré-requisitos
 
 Executando
 - Rodar o executável (se for o caso)
+- Basta colar a chave da OpenAI no local designado. Então clicar no link gerado.
 - Iniciar servidor:
   python app.py
 - A aplicação roda em http://0.0.0.0:5001/ (ou http://localhost:5001).
