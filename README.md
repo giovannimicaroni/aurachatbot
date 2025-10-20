@@ -2,7 +2,7 @@
 
 
 
-AURA is an AI assistant that was developed during the hackathon Desafio Unisoma 2025. It was designed to be used by a NGO specialized in Heulosophy, and designed to connect users to knowledge through an intelligent and intuitive conversational interface. Inspired by Walter Benjamin's philosophical concept of "aura," the project seeks to restore the presence and authenticity of knowledge even when mediated by technology.
+AURA is an AI assistant that was developed during the hackathon Desafio Unisoma 2025. It was designed to be used by a NGO specialized in Heulosophy, and designed to connect users to knowledge through an intelligent and intuitive conversational interface. Inspired by Walter Benjamin's philosophical concept of "aura," the project seeks to restore the presence and authenticity of knowledge even when mediated by technology. It should be used in the Portuguese language.
 
 ![Python](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![Flask](https://img.shields.io/badge/flask-3.0+-green.svg)
