@@ -9,22 +9,27 @@ from langchain_core.output_parsers import StrOutputParser
 from operator import itemgetter
 from typing import List
 from PyPDF2 import PdfReader
+import pdfplumber
+from langchain.schema import Document
+import tempfile
+import pathlib
+import sys
 
 # Load environment variables
 load_dotenv()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-if not OPENAI_API_KEY:
-    raise RuntimeError("OPENAI_API_KEY not set. Add it to your .env or export it in the shell.")
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
 
 
+
+
+#Classe principal
 class RAGChatbot:
-    def __init__(self, openai_api_key: str, model: str = "gpt-3.5-turbo"):
+    def __init__(self, openai_api_key: str= None, model: str = "gpt-5-mini"):
         """
         Initialize the chatbot with OpenAI API key and other attributes.
         """
         self.openai_api_key = openai_api_key
-        
+        os.environ["OPENAI_API_KEY"] = openai_api_key
+
         self.llm = ChatOpenAI(
             model=model,
             temperature=0.7,
@@ -36,12 +41,19 @@ class RAGChatbot:
         self.vectorstore = None
         self.chain = None 
         
-        self.add_documents(texts_path="arquivos_ong/")
+        self.add_documents(texts_path=self.resource_path("arquivos_ong/"))
     
+    def set_api_key(self, api_key: str):
+        """Sets the OpenAI API key."""
+        self.openai_api_key = api_key
+        os.environ["OPENAI_API_KEY"] = api_key
+
     def _format_docs(self, docs: List[Document]) -> str:
         """Formats retrieved documents into a single string for the prompt. Adds simple metadata."""
   
         return "\n\n".join(f"Source: {doc.metadata.get('source', 'N/A')}\nContent: {doc.page_content}" for doc in docs)
+    
+
 
     def _setup_rag_chain(self):
         """Builds the core RAG chain using LCEL without history components.
@@ -50,7 +62,7 @@ class RAGChatbot:
         
         answer_prompt = ChatPromptTemplate.from_messages(
             [
-                ("system", "Você é um assistente de IA amigável especializado em Eulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta. Se a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe, mantendo um tom conversacional. \n\n Histórico da conversa:{history} \n\nContexto:\n{context}"),
+                ("system", "Você é um assistente de IA amigável especializado em Heulosofia. Sua tarefa é conversar com o usuário e resonder suas perguntas. As perguntas podem ser sobre o contexto fornecido ou sobre o histórico da conversa. Responda as perguntas em português. Use somente o contexto fornecido ou o histórico de conversa para responder à pergunta, e não explicite quem falou sobre. Se a pergunta for técnica e a resposta não estiver no contexto ou no histórico da conversa, diga que não sabe. Se a pergunta for casual, responda mantendo um tom conversacional. \n\n Histórico da conversa:{history} \n\nContexto:\n{context}"),
                 ("human", "Question: {question}"),
             ])
 
@@ -65,13 +77,25 @@ class RAGChatbot:
             | StrOutputParser()
         )
     
-    
-    def add_documents(self, texts_path, chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 500):
+    def resource_path(self, relative_path):
+        """
+        Para PyInstaller: obtém o caminho temporário quando empacotado
+        """
+        if getattr(sys, 'frozen', False):
+            base_path = sys._MEIPASS
+        else:
+            base_path = os.path.dirname(os.path.abspath(__file__))
+        return os.path.join(base_path, relative_path)
+
+    def add_documents(self, texts_path, chunk_size: int = 1000, chunk_overlap: int = 50, batch_size: int = 800):
+
+            texts_path = self.resource_path(texts_path)
             """
             Add documents to the RAG system and initializes the stateless LCEL chain.
             Documents are split into chunks and uploaded to the vectorstore in batches.
             """
             def _get_texts(texts_path=texts_path):
+                texts_path = self.resource_path(texts_path)
                 data = []
                 ind = 0
                 for dirpath, dirnames, filenames in os.walk(texts_path):
@@ -123,8 +147,6 @@ class RAGChatbot:
             
             splits = text_splitter.split_documents(documents)
 
-            print(f"Número de chunks {len(splits)}")
-
             if self.vectorstore is None:
                 self.vectorstore = InMemoryVectorStore(self.embeddings)
 
@@ -134,19 +156,52 @@ class RAGChatbot:
             for i in range(0, total, batch_size):
                 batch = splits[i:i + batch_size]
                 self.vectorstore.add_documents(batch)
-                print(f"Added batch {i // batch_size + 1}/{num_batches} ({len(batch)} chunks)")
 
             self.chain = self._setup_rag_chain()
             
             print(f"✓ Added {len(splits)} document chunks to knowledge base.")
+    
+    #Add doc único à base de dados
+    def add_single_document(self, file_storage, save_to_dir=None):
+        """
+        Adiciona um único arquivo à vectorstore.
+        - file_storage: objeto FileStorage recebido do Flask (request.files['file'])
+        - save_to_dir: caminho opcional de diretório (ex: 'arquivos_ong/') para salvar o arquivo
+        Usa internamente a lógica completa de add_documents().
+        """
 
+        print(f"Arquivo recebido: {file_storage.filename}")
+
+        if save_to_dir:
+            save_path = pathlib.Path(save_to_dir)
+            save_path.mkdir(parents=True, exist_ok=True)
+            file_path = save_path / file_storage.filename
+            file_storage.save(file_path)
+        else:
+            tmp_dir = tempfile.mkdtemp()
+            file_path = pathlib.Path(tmp_dir) / file_storage.filename
+            file_storage.save(file_path)
+
+        ext = file_path.suffix.lower()
+
+
+        dir_path = str(file_path.parent)
+        self.add_documents(dir_path)
+
+        if not save_to_dir:
+            try:
+                os.remove(file_path)
+                os.rmdir(tmp_dir)
+                print(f"[DEBUG] Arquivo temporário removido: {file_path}")
+            except Exception as e:
+                print(f"[DEBUG] Erro ao remover arquivo temporário: {e}")
+
+    #Método de conversa com o modelo
     def chat(self, question: str, history: str) -> dict:
         """
         Chat with the bot. Each message is independent. input: {"question": question}
         """
         if self.chain is not None:
-
-            print(f"\n\n {history}")
             
             response = self.chain.invoke({"question": question, "history": history})
 
@@ -160,8 +215,6 @@ class RAGChatbot:
                 ("human", "{question}")
             ])
 
-            print(prompt)
-
             chain = prompt | self.llm | StrOutputParser()
             result = chain.invoke({"question": question, "history": history})
 
@@ -170,7 +223,7 @@ class RAGChatbot:
                 "sources": []
             }
 
-
+# Função para gerar o audio da resposta caso dê tempo
 def generate_audio(text):
     from pathlib import Path
     from openai import OpenAI
@@ -186,34 +239,5 @@ def generate_audio(text):
     ) as response:
         response.stream_to_file(speech_file_path)
 
-if __name__ == "__main__":
-    bot = RAGChatbot(OPENAI_API_KEY)
-    
-    # Direct chat
-    response = bot.chat("Olá! Como posso te ajudar?", "")
-    print(f"Bot: {response['answer']}\n")
-    
-    # Add documents for RAG
-    print("\n=== Adding Documents ===")
 
     
-    # Chat with Stateless RAG
-    print("\n=== Chat with Stateless RAG ===")
-    
-    q1 = "O que o palestrante define como 'Saneamento Mental'?"
-    response = bot.chat(q1, "")
-    print(f"Q1: {q1}")
-    print(f"Bot: {response['answer']}")
-    print("-" * 20)
-    
-    q2 = "Cite os quatro procedimentos ou ferramentas essenciais para praticar o 'Zendrômeda' e promover a auto-equalização."
-    response = bot.chat(q2, "")
-    print(f"Q2: {q2}")
-    print(f"Bot: {response['answer']}")
-    print("-" * 20)
-    
-    q3 = "Como a análise dos sonhos, mesmo os pesadelos, pode resultar em uma sensação de bem-estar e clareza ao acordar? Utilize os exemplos dos participantes para explicar o processo."
-    response = bot.chat(q3, "")
-    print(f"Q3: {q3}")
-    print(f"Bot: {response['answer']}")
-    print("-" * 20)

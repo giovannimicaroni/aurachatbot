@@ -1,5 +1,7 @@
+flask==3.0.0
 python-dotenv>=1.1.1
 openai>=2.3.0
 langchain==0.3.27
 langchain-openai==0.3.35
 PyPDF2>=3.0.1
+tiktoken>=0.12.0

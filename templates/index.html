@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Marko+One&family=Ruda:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Aura">
+        </div>
+        <div class="menu-toggle" id="menuToggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <!-- Menu de Navegação -->
+        <nav id="nav">
+            <a href="#" class="nav-btn active" data-page="home">Home</a>
+            <a href="#" class="nav-btn" data-page="sobre">Sobre a AURA</a>
+            <a href="#" class="nav-btn" data-page="explorar">Explorar</a>
+            <a href="#" class="nav-btn" data-page="dicas">Dicas</a>
+        </nav>
+    </header>
+
+    <div class="page-content active" id="home">
+        <div class="content-wrapper">
+            <h1 class="title">AURA</h1>
+            <p class="subtitle">Sua pergunta, nossa essência.</p>
+            <div class="search-container">
+                <input type="text" class="search-input" id="searchInput" placeholder="Digite sua pergunta aqui..." maxlength="200">
+                <button class="search-button" id="searchButton">
+                    <svg viewBox="0 0 24 24" width="22" height="22">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content" id="sobre">
+        <div class="content-wrapper">
+            <h1>Sobre a <span class="aura-title">AURA</span></h1>
+            <p class="subtitle">Entre presença, memória e tecnologia.</p>
+            <div class="about-content">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-sparkles"></i></div>
+                    <h3>O que é o <span class="aura-title">AURA</span></h3>
+                    <p>O <span class="aura-title">AURA</span> é um espaço de pesquisa e contemplação. Um ambiente digital que conecta o usuário a acervos e textos, revelando a singularidade de cada obra em meio à era da reprodução técnica.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-book"></i></div>
+                    <h3>Inspiração Filosófica</h3>
+                    <p>Inspirado no conceito de <em>AURA</em> de Walter Benjamin, o projeto busca resgatar a presença e a autenticidade do conhecimento — mesmo quando mediado pela tecnologia.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-circle-nodes"></i></div>
+                    <h3>Tecnologia com Sentido</h3>
+                    <p>O <span class="aura-title">AURA</span> utiliza inteligência artificial e métodos semânticos para auxiliar a pesquisa, sem perder o olhar humano que dá sentido à experiência de descobrir.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-content" id="explorar">
+        <div class="content-wrapper">
+            <h1>Explorar</h1>
+            <p class="subtitle">Pesquise, descubra e reconecte-se com o conhecimento.</p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-magnifying-glass"></i>
+                    </div>
+                    <h3>Busca Inteligente</h3>
+                    <p>Encontre textos, autores e ideias a partir de uma busca semântica que entende o contexto — não apenas as palavras.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fa-brands fa-connectdevelop"></i>
+                    </div>
+                    <h3>Conexões de Sentido</h3>
+                    <p>O Aura revela relações entre obras e conceitos, permitindo que o conhecimento se expanda em rede.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                    <h3>Acervos Digitais</h3>
+                    <p>Explore fontes confiáveis, curadas e conectadas a instituições que preservam o saber em suas múltiplas formas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<div class="page-content" id="dicas">
+    <div class="content-wrapper">
+        <h1>Dicas</h1>
+        <p class="subtitle">Esclarecendo pensamentos.</p>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-bullseye"></i>
+                </div>
+                <h3>Seja Preciso(a) na Busca</h3>
+                <p>Evite indagações amplas que dispersam a atenção. Quanto mais detalhado for seu questionamento, melhor <span class="aura-title">AURA</span> poderá direcionar o foco e formular respostas essenciais.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <h3>Ofereça o Contexto da Sua Reflexão</h3>
+                <p>Inclua a visão específica (ética, prática, filosófica) no prompt. Isso ajuda <span class="aura-title">AURA</span> a entender a intenção profunda da sua busca.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-diagram-project"></i>
+                </div>
+                <h3>Defina Perspectiva e Estrutura</h3>
+                <p>Peça que <span class="aura-title">AURA</span> adote uma perspectiva ou organize a resposta para facilitar reflexão.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <h3>Utilize Termos-Chave da Sabedoria</h3>
+                <p>Use termos precisos da Heulosofia para que <span class="aura-title">AURA</span> acesse o conhecimento correto.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <h3>Aborde a Complexidade com Passos Lógicos</h3>
+                <p>Divida pedidos complexos em etapas sequenciais.</p>
+            </div>
+
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fa-solid fa-lightbulb"></i>
+                </div>
+                <h3>Solicite a Fonte da Inspiração</h3>
+                <p>Pergunte sempre a fonte ou ensinamento que embasa a resposta.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <a href="/chat" class="chat-button">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+        </svg>
+    </a>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <h3>Chat Aura</h3>
+            <button class="chat-close" id="chatClose">×</button>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                Olá! Bem-vindo ao Aura. Como posso ajudar você hoje? 😊
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input
+                type="text"
+                class="chat-input"
+                id="chatInput"
+                placeholder="Digite sua mensagem..."
+                maxlength="500"
+            >
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="file" id="chatFileInput" style="display: none;" />
+                <button id="chatUploadBtn" title="Enviar arquivo" style="width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); cursor: pointer;">
+                    📎
+                </button>
+                <label style="color: white; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+                    <input type="checkbox" id="saveToDefaultCheckbox" checked>
+                    Salvar em arquivos_ong
+                </label>
+            </div>
+
+            <button class="chat-send" id="chatSend">
+                <svg viewBox="0 0 24 24">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+</body>
+</html>
